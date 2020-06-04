@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Book;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BooksController extends Controller
 {
@@ -29,7 +30,33 @@ class BooksController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'authors' => 'required',
+            'category_id' => 'required',
+            'title' => 'required',
+            'synopsis' => 'required',
+            'image' => 'nullable|image'
+        ]);
+
+        $record = Book::create([
+            'user_id' => 1,
+            'category_id' => $request->get('category_id'),
+            'title' => $request->get('title'),
+            'synopsis' => $request->get('synopsis'),
+        ]);
+
+        $record->authors()->attach($request->get('authors'));
+
+        if($request->file('image')) {
+            $path = Storage::disk('public')->put('images/books', $request->file('image'));
+            $record->update([
+                'image' => $path
+            ]);
+        }
+
+        return response()->json([
+            'record' => $record
+        ]);
     }
 
     /**
@@ -56,7 +83,34 @@ class BooksController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'authors' => 'required',
+            'category_id' => 'required',
+            'title' => 'required',
+            'synopsis' => 'required',
+            'image' => 'nullable'
+        ]);
 
+        $record = Book::find($id);
+
+        $record->update([
+            'category_id' => $request->get('category_id'),
+            'title' => $request->get('title'),
+            'synopsis' => $request->get('synopsis')
+        ]);
+
+        $record->authors()->sync($request->get('authors'));
+
+        if($request->file('image')) {
+            $path = Storage::disk('public')->put('images/books', $request->file('image'));
+            $record->update([
+                'image' => $path
+            ]);
+        }
+
+        return response()->json([
+            'record' => $record
+        ]);
     }
 
     /**

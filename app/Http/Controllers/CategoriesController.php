@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use Illuminate\Http\Request;
 
 class CategoriesController extends Controller
@@ -13,17 +14,11 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $records = Category::all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return response()->json([
+            'records' => $records
+        ]);
     }
 
     /**
@@ -34,7 +29,17 @@ class CategoriesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required'
+        ]);
+
+        $record = Category::create([
+            'name' => $request->get('name')
+        ]);
+
+        return response()->json([
+            'record' => $record
+        ]);
     }
 
     /**
@@ -45,18 +50,11 @@ class CategoriesController extends Controller
      */
     public function show($id)
     {
-        //
-    }
+        $record = Category::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return response()->json([
+            'record' => $record
+        ]);
     }
 
     /**
@@ -68,7 +66,19 @@ class CategoriesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required'
+        ]);
+
+        $record = Category::find($id);
+
+        $record->update([
+            'name' => $request->get('name')
+        ]);
+
+        return response()->json([
+            'record' => $record
+        ]);
     }
 
     /**
@@ -79,6 +89,10 @@ class CategoriesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $record = Category::find($id);
+
+        $record->delete();
+
+        return response()->json([]);
     }
 }
