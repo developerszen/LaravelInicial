@@ -70,7 +70,7 @@ class AuthorsController extends Controller
             'name' => 'required'
         ]);
 
-        $record = Author::find($id);
+        $record = Author::findOrFail($id);
 
         $record->update([
             'name' => $request->get('name')
