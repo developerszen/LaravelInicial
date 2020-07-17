@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
              AuthorSeeder::class,
              CategorySeeder::class,
              UserSeeder::class,
+             BookSeeder::class,
          ]);
     }
 }
