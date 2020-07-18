@@ -5,6 +5,11 @@
 use App\Book;
 use Faker\Generator as Faker;
 
+//Obtener GET
+//Registror POST
+//Actualizar PUT
+//Eliminar DELETE
+
 $factory->define(Book::class, function (Faker $faker) {
     return [
         'user_id' => 1,
