@@ -2,8 +2,8 @@
 
 Route::post('login', 'AuthController@login');
 
-Route::post('authors', 'AuthorController@store');
 Route::middleware(['auth:api'])->group(function () {
+    Route::post('authors', 'AuthorController@store');
     Route::get('authors', 'AuthorController@index');
     Route::get('authors/{author}', 'AuthorController@show');
     Route::put('authors/{author}', 'AuthorController@update');
