@@ -26,8 +26,7 @@ class CreateBooksTable extends Migration
             $table->mediumText('synopsis');
             $table->string('image')->nullable();
             $table->timestamps();
-
-
+            $table->softDeletes();
         });
     }
 

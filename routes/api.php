@@ -2,7 +2,11 @@
 
 Route::post('login', 'AuthController@login');
 
-Route::middleware(['auth:api'])->group(function () {
+Route::middleware(['auth:api'])->group(function() {
+    Route::post('users/verify', 'UserController@verify');
+});
+
+Route::middleware(['auth:api', 'email_verified'])->group(function () {
 
     Route::post('users', 'UserController@store');
 

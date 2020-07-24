@@ -24,9 +24,22 @@ class UserController extends Controller
             'email_verified_token' => $this->generateToken(),
         ]);
 
-        Mail::to($record->email)->send(new VerifiedEmail());
+        Mail::to($record->email)->send(new VerifiedEmail($record));
 
         return $record;
+    }
+
+    function verify(Request $request) {
+        $user = User::where('email_verified_token', $request->query('email_verified_token'))->firstOrFail();
+
+        $user->update([
+            'email_verified_at' => now(),
+            'email_verified_token' => null,
+        ]);
+
+        return response([
+            'success' => 'Email verified'
+        ]);
     }
 
     protected function generateToken() {
