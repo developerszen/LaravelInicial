@@ -27,4 +27,10 @@ class AuthController extends Controller
             'error' => 'unauthorized',
         ], 401);
     }
+
+    function logout() {
+        auth()->logout();
+
+        return response([], 204);
+    }
 }

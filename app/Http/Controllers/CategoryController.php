@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class CategoryController extends Controller
 {
     function index() {
-        $records = Category::all();
+        $records = Category::latest()->get();
 
         return $records;
     }

@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Author;
 use App\Book;
+use App\Category;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
     function index() {
-        $records = Book::with(['category', 'authors'])->get();
+        $records = Book::latest()->with(['category', 'authors'])->get();
 
         return $records;
     }
@@ -43,7 +45,7 @@ class BookController extends Controller
     }
 
     function show($book) {
-        $record = Book::findOrFail($book);
+        $record = Book::with(['category', 'authors', 'user'])->findOrFail($book);
 
         return response()->json($record, 201);
     }
@@ -84,5 +86,12 @@ class BookController extends Controller
         $record->delete();
 
         return response([], 204);
+    }
+
+    function resources() {
+        $categories = Category::latest()->get();
+        $authors = Author::latest()->get();
+
+        return response()->json(compact('categories', 'authors'));
     }
 }

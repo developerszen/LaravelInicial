@@ -9,14 +9,23 @@ use Illuminate\Http\Request;
 class AuthorController extends Controller
 {
     function index() {
-        $records = Author::all();
+        $records = Author::latest()->get();
 
         return $records;
     }
 
     function store(Request $request) {
         $request->validate([
-            'name' => 'required',
+            'name' => [
+                'required',
+                function ($atribute, $value, $fail) {
+                    $regex = preg_match('/^[\pL\.\s]+$/u', $value);
+
+                    if ($regex) return;
+
+                    $fail(trans('validation.alpha_spaces'));
+                }
+            ],
         ]);
 
         $record = Author::create([

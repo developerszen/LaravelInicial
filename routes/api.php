@@ -2,8 +2,10 @@
 
 Route::post('login', 'AuthController@login');
 
+
 Route::middleware(['auth:api'])->group(function() {
     Route::post('users/verify', 'UserController@verify');
+    Route::post('logout', 'AuthController@logout');
 });
 
 Route::middleware(['auth:api', 'email_verified'])->group(function () {
@@ -22,6 +24,7 @@ Route::middleware(['auth:api', 'email_verified'])->group(function () {
     Route::put('categories/{category}', 'CategoryController@update');
     Route::delete('categories/{category}', 'CategoryController@destroy');
 
+    Route::get('books/resources', 'BookController@resources');
     Route::post('books', 'BookController@store');
     Route::get('books', 'BookController@index');
     Route::get('books/{book}', 'BookController@show');
