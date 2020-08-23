@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class AuthorController extends Controller
 {
     function index() {
-        $authors = Author::all();
+        $authors = Author::withCount('books')->get();
 
         return $authors;
     }
@@ -53,6 +53,14 @@ class AuthorController extends Controller
 
     function destroy($id) {
         $author = Author::findOrFail($id);
+
+        $relation = $author->books;
+
+        if(count($relation)) {
+            return response()->json([
+               'error' => 'Integrity violation',
+            ], 500);
+        }
 
         $author->delete();
 

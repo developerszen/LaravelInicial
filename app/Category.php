@@ -10,4 +10,8 @@ class Category extends Model
     use SoftDeletes;
 
     protected $fillable = ['name'];
+
+    function book() {
+        return $this->hasOne(Book::class);
+    }
 }

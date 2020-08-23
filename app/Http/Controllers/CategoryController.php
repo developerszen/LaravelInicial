@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class CategoryController extends Controller
 {
     function index() {
-        $categories = Category::all();
+        $categories = Category::withCount('book')->get();
 
         return $categories;
     }
@@ -53,6 +53,14 @@ class CategoryController extends Controller
 
     function destroy($id) {
         $category = Category::findOrFail($id);
+
+        $relation = $category->book()->exists();
+
+        if($relation) {
+            return response()->json([
+                'error' => 'Integrity violation',
+            ], 500);
+        }
 
         $category->delete();
 
