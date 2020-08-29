@@ -2,8 +2,9 @@
 
 Route::post('login', 'AuthController@login');
 Route::post('request-password-recovery', 'UserController@requestPasswordRecovery');
+Route::post('password-recovery', 'UserController@passwordRecovery');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'reset_token'])->group(function () {
     Route::post('logout', 'AuthController@logout');
 
     Route::get('authors', 'AuthorController@index');

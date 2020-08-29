@@ -76,7 +76,8 @@ class BookController extends Controller
             },
             'user' => function($query) {
                 return $query->select(['id', 'name']);
-            }
+            },
+            'chapters'
         ]);
     }
 

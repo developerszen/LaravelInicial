@@ -30,7 +30,7 @@ class EmailRecovery extends Mailable
      */
     public function build()
     {
-        return $this->from('zen.capacitaciones.laravel@gmail.com')
+        return $this->from('capacitaciones.zen@gmail.com')
             ->subject('Recuperación de contraseña')
             ->view('mail.email_recovery');
     }

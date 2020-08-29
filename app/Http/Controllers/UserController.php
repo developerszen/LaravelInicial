@@ -31,6 +31,21 @@ class UserController extends Controller
 
     }
 
+    function passwordRecovery(Request $request) {
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        $user = User::where('reset_token', $request->query('reset_token'))->firstOrFail();
+
+        $user->update([
+            'password' => bcrypt($request->input('password')),
+            'reset_token' => null
+        ]);
+
+        return response([], 204);
+    }
+
     private function generateToken() {
         $token = Str::random(80);
 
