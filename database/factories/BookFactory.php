@@ -25,7 +25,7 @@ class BookFactory extends Factory
             'user_id' => 1,
             'title' => $this->faker->sentence(5),
             'synopsis' => $this->faker->paragraph(6),
-            'image' => $this->faker->imageUrl(),
+            'image' => $this->faker->randomElement([null, $this->faker->imageUrl()]),
         ];
     }
 }
