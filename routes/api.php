@@ -4,12 +4,15 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
 Route::post('login', [AuthController::class, 'login']);
+Route::post('request-password-recovery', [UserController::class, 'requestPasswordRecovery']);
+Route::post('password-recovery', [UserController::class, 'passwordRecovery']);
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'reset_verify'])->group(function () {
 
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('me', [AuthController::class, 'me']);
