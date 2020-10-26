@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AuthorRequest;
 use App\Models\Author;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AuthorController extends Controller
 {
     function index() {
-        return Author::all();
+        return Author::latest()->get();
     }
 
-    function store(Request $request) {
-        $request->validate([
-            'name' => 'required|string|max:80',
-        ]);
-
+    function store(AuthorRequest $request) {
         $author = Author::create([
             'name' => $request->input('name'),
         ]);
@@ -35,11 +33,7 @@ class AuthorController extends Controller
         return $author;
     }
 
-    function update(Request $request, $author) {
-        $request->validate([
-            'name' => 'required|string|max:80',
-        ]);
-
+    function update(AuthorRequest $request, $author) {
         $author = Author::findOrFail($author);
 
         $author->update([
