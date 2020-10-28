@@ -7,8 +7,15 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    function index() {
-        return Category::all();
+    function index(Request $request) {
+        return Category::latest()
+            ->when($request->has('name'), function ($query) use ($request) {
+                $name = $request->query('name');
+                $query->where('name', 'like', '%' . $name . '%');
+            })
+            ->select('id', 'name', 'created_at')
+            ->withCount('book')
+            ->paginate(5);
     }
 
     function store(Request $request) {
@@ -51,6 +58,14 @@ class CategoryController extends Controller
 
     function destroy(Category $category)
     {
+        $relation = $category->book()->exists();
+
+        if($relation) {
+            return response([
+                'error' => 'Integrity violation',
+            ], 500);
+        }
+
         $category->delete();
 
         return response(null, 204);

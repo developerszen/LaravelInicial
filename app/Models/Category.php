@@ -13,4 +13,16 @@ class Category extends Model
     protected $fillable = ['name'];
 
     protected $hidden = ['deleted_at'];
+
+    function book() {
+        return $this->hasOne(Book::class);
+    }
+
+    function scopeWithFields($query) {
+        if (true) {
+            return $query->select('id', 'name', 'created_at');
+        }
+
+        return $query->select('id', 'name');
+    }
 }

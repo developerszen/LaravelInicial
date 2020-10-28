@@ -8,13 +8,39 @@ use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
-    function index() {
-        $books = Book::all();
+    function index(Request $request)
+    {
+        $books = Book::with([
+            'category' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'authors' => function ($query) {
+                $query->select('authors.id', 'name');
+            }
+        ])
+            ->latest()
+            ->when($request->has('title'), function ($query) use ($request) {
+                $title = $request->query('title');
+                $query->where('title', 'like', '%' . $title . '%');
+            })
+            ->when($request->has('author'), function ($query) use ($request) {
+                $query->whereHas('authors', function ($query) use ($request) {
+                    $author = $request->query('author');
+                    $query->where('author_id', $author);
+                });
+            })
+            ->when($request->has('category'), function ($query) use ($request) {
+                $category = $request->query('category');
+                $query->where('category_id', $category);
+            })
+            ->select('id', 'category_id', 'title', 'image', 'created_at')
+            ->paginate(5);
 
         return $books;
     }
 
-    function store(Request $request) {
+    function store(Request $request)
+    {
         $request->validate([
             'authors' => 'required|array',
             'authors.*' => 'exists:authors,id',
@@ -44,15 +70,16 @@ class BookController extends Controller
         return $book;
     }
 
-    function show($book) {
+    function show($book)
+    {
         $book = Book::with([
-            'authors' => function($query) {
+            'authors' => function ($query) {
                 return $query->select('authors.id', 'name');
             },
-            'category' => function($query) {
-                return $query->select('id', 'name');
+            'category' => function ($query) {
+                return $query->withFields();
             },
-            'user' => function($query) {
+            'user' => function ($query) {
                 return $query->select('id', 'name');
             },
         ])->findOrFail($book);
@@ -60,20 +87,26 @@ class BookController extends Controller
         return $book;
     }
 
-    function edit($book) {
-        return Book::with([
-            'authors' => function($query) {
-                return $query->select('authors.id', 'name');
-            },
-            'category' => function($query) {
-                return $query->select('id', 'name');
+    function edit($book)
+    {
+        $book = Book::with([
+//            'authors' => function ($query) {
+//                return $query->select('authors.id', 'name');
+//            },
+            'category' => function ($query) {
+                return $query->withFields();
             },
         ])
             ->select('id', 'category_id', 'title', 'synopsis', 'image')
             ->findOrFail($book);
+
+        $book->authors = $book->authors()->pluck('authors.id');
+
+        return $book;
     }
 
-    function update(Request $request, Book $book) {
+    function update(Request $request, Book $book)
+    {
         $request->validate([
             'authors' => 'required|array',
             'authors.*' => 'exists:authors,id',
@@ -86,9 +119,9 @@ class BookController extends Controller
         $path = null;
 
         $book->update([
-           'category_id' => $request->input('category_id'),
-           'title' => $request->input('title'),
-           'synopsis' => $request->input('synopsis'),
+            'category_id' => $request->input('category_id'),
+            'title' => $request->input('title'),
+            'synopsis' => $request->input('synopsis'),
         ]);
 
         if ($request->hasFile('image')) {
@@ -106,7 +139,8 @@ class BookController extends Controller
         return $book;
     }
 
-    function destroy(Book $book) {
+    function destroy(Book $book)
+    {
         $book->delete();
 
         return response(null, 204);

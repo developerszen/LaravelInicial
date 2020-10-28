@@ -9,8 +9,15 @@ use Illuminate\Validation\Rule;
 
 class AuthorController extends Controller
 {
-    function index() {
-        return Author::latest()->get();
+    function index(Request $request) {
+        return Author::latest()
+            ->when($request->has('name'), function ($query) use ($request) {
+                $name = $request->query('name');
+                $query->where('name', 'like', '%' . $name . '%');
+            })
+            ->select('id', 'name', 'created_at')
+            ->withCount('books')
+            ->paginate(5);
     }
 
     function store(AuthorRequest $request) {
@@ -45,6 +52,14 @@ class AuthorController extends Controller
 
     function destroy(Author $author)
     {
+        $relation = $author->books()->count();
+
+        if ($relation) {
+            return response([
+                'error' => 'Integrity violation',
+            ], 500);
+        }
+
         $author->delete();
 
         return response(null, 204);
